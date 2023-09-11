@@ -425,3 +425,6 @@ obj/
 
 # Test Files
 *.csr
+
+# Other build dirs
+out/

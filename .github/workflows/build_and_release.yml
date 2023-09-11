@@ -1,0 +1,78 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target:
+          - linux-x64
+          - linux-musl-x64
+          - linux-arm
+          - linux-arm64
+          - osx-x64
+          - osx-arm64
+          - win-arm64
+          - win-x64
+          - win-x86
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0"
+
+      - name: Build and Publish
+        run: dotnet publish ./src/yk-csr-cli/GenerateYKCSR.csproj -c Release -r ${{ matrix.target }} --self-contained /p:PublishReadyToRun=true -o out/${{ matrix.target }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.target }}
+          path: out/${{ matrix.target }}
+
+  release:
+    permissions:
+      contents: write
+      packages: write
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+          prerelease: true
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v2
+
+      - run: |
+          for target in linux-x64 linux-musl-x64 linux-arm linux-arm64 osx-x64 osx-arm64 win-arm64 win-x64 win-x86; do
+            zip -r ./out/$target.zip $target
+          done
+
+      - run: |
+          for target in linux-x64 linux-musl-x64 linux-arm linux-arm64 osx-x64 osx-arm64 win-arm64 win-x64 win-x86; do
+            echo "Uploading $target..."
+            gh release upload ${{ github.ref }} ./out/$target.zip --clobber
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

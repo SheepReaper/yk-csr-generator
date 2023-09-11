@@ -1,0 +1,43 @@
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target:
+          - linux-x64
+          - linux-musl-x64
+          - linux-arm
+          - linux-arm64
+          - osx-x64
+          - osx-arm64
+          - win-arm64
+          - win-x64
+          - win-x86
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0"
+
+      - name: Build
+        run: dotnet publish ./src/yk-csr-cli/GenerateYKCSR.csproj -c Release -r ${{ matrix.target }} --self-contained /p:PublishReadyToRun=true -o out/${{ matrix.target }}
+
+      - name: Archive
+        run: zip -r ./out/${{ matrix.target }}.zip ./out/${{ matrix.target }} -j
+
+      - name: Upload
+        run: gh release upload ${{github.event.release.tag_name}} ./out/${{ matrix.target }}.zip
+        env:
+          GITHUB_TOKEN: ${{ github.TOKEN }}
+        shell: bash

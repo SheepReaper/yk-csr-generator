@@ -62,7 +62,7 @@ jobs:
           prerelease: true
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - run: |
           for target in linux-x64 linux-musl-x64 linux-arm linux-arm64 osx-x64 osx-arm64 win-arm64 win-x64 win-x86; do

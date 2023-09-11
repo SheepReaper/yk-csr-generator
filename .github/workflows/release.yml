@@ -37,7 +37,7 @@ jobs:
         run: zip -r ./out/${{ matrix.target }}.zip ./out/${{ matrix.target }} -j
 
       - name: Upload
-        run: gh release upload ${{github.event.release.tag_name}} ./out/${{ matrix.target }}.zip
+        run: gh release upload ${{github.event.release.tag_name}} ./out/${{ matrix.target }}.zip --clobber
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
         shell: bash

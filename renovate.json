@@ -1,7 +1,19 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:base",
+    ":rebaseStalePrs",
+    ":automergeDigest",
+    ":automergePatch",
+    ":automergeMinor",
+    ":automergePr",
+    ":maintainLockFilesWeekly",
+    ":automergeLinters",
+    ":automergeTesters",
+    ":automergeTypes",
+    ":gitSignOff",
+    ":assignAndReview(SheepReaper)",
+    ":semanticCommits"
   ],
   "vulnerabilityAlerts": {
     "labels": ["security"],

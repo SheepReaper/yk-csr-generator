@@ -168,9 +168,11 @@ public static class GenerateCSRCommand
 
             return obj;
         }
+
+        public Params Bind(BindingContext context) => GetBoundValue(context);
     }
 
-    public static async Task ExecuteAsync(Params boundParams)
+    public static async Task ExecuteAsync(Params boundParams, CancellationToken ctx = default)
     {
         if (!PivSlot.IsValidSlotNumberForSigning(boundParams.SlotNumber)) throw new InvalidOperationException("The requested slot is not capable of signing. Aborting...");
 
@@ -234,7 +236,7 @@ public static class GenerateCSRCommand
 
         var stringResult = csr.CreateSigningRequestPem(sigGenerator);
 
-        if (boundParams.OutFile is not null) await File.WriteAllTextAsync(boundParams.OutFile.FullName, stringResult);
+        if (boundParams.OutFile is not null) await File.WriteAllTextAsync(boundParams.OutFile.FullName, stringResult, ctx);
 
         if (boundParams.OutputToConsole || boundParams.OutFile is null) Console.WriteLine(stringResult.ReplaceLineEndings());
 
@@ -245,7 +247,7 @@ public static class GenerateCSRCommand
             Convert.ToBase64String(pub, Base64FormattingOptions.InsertLineBreaks) +
             "\n-----END PUBLIC KEY-----";
 
-        if (boundParams.OutPubFile is not null) await File.WriteAllTextAsync(boundParams.OutPubFile.FullName, pubKeyPem);
+        if (boundParams.OutPubFile is not null) await File.WriteAllTextAsync(boundParams.OutPubFile.FullName, pubKeyPem, ctx);
 
         if (boundParams.OutputPubToConsole || boundParams.OutPubFile is null) Console.WriteLine(pubKeyPem.ReplaceLineEndings());
     }

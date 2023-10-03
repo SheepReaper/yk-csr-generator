@@ -20,9 +20,11 @@ public static class GenerateCSRCommand
         public IEnumerable<string> SanUserPrincipalName { get; set; } = new List<string>();
         public bool RecreatePrivateKey { get; set; }
         public bool OutputToConsole { get; set; }
+        public bool OutputPubToConsole { get; set; }
         public byte SlotNumber { get; set; }
         public HashAlgorithmName HashAlgorithmName { get; set; }
         public FileInfo? OutFile { get; set; }
+        public FileInfo? OutPubFile { get; set; }
         public string? CommonName { get; set; }
         public string? CountryOrRegion { get; set; }
         public string? DomainComponent { get; set; }
@@ -57,11 +59,20 @@ public static class GenerateCSRCommand
             aliases: ["--out", "--out-file"],
             description: "The file path where the generated CSR will be written. If not provided, CSR will be printed to the console."
         ), (o, v) => o.OutFile = v),
+        new OptionMapper<FileInfo?>(new(
+            aliases: ["--out-pub", "--out-pub-file"],
+            description: "If specified, the file path where the public key extracted from the CSR will be written."
+        ), (o, v) => o.OutPubFile = v),
         new OptionMapper<bool>(new(
             aliases: ["--text"],
             description: "Print CSR to console irrespective of file output option.",
             getDefaultValue: () => false
         ), (o, v) => o.OutputToConsole = v),
+        new OptionMapper<bool>(new(
+            aliases: ["--text-pub"],
+            description: "Print the public key to the console.",
+            getDefaultValue: () => false
+        ), (o, v) => o.OutputPubToConsole = v),
         new OptionMapper<string>(new Option<string>(
             aliases: ["--hash"],
             description: "Specifies the hash algorithm to use for the CSR. Supported hash algorithms are SHA1, SHA256, SHA384, and SHA512. OIDs and friendly names (case-insensitive) of the algorithms can be used.",
@@ -227,7 +238,6 @@ public static class GenerateCSRCommand
 
         if (boundParams.OutputToConsole || boundParams.OutFile is null) Console.WriteLine(stringResult.ReplaceLineEndings());
 
-        // TODO: print the public key from the CSR
         var pub = csr.PublicKey.ExportSubjectPublicKeyInfo();
 
         string pubKeyPem =
@@ -235,6 +245,8 @@ public static class GenerateCSRCommand
             Convert.ToBase64String(pub, Base64FormattingOptions.InsertLineBreaks) +
             "\n-----END PUBLIC KEY-----";
 
-        Console.WriteLine(pubKeyPem.ReplaceLineEndings());
+        if (boundParams.OutPubFile is not null) await File.WriteAllTextAsync(boundParams.OutPubFile.FullName, pubKeyPem);
+
+        if (boundParams.OutputPubToConsole || boundParams.OutPubFile is null) Console.WriteLine(pubKeyPem.ReplaceLineEndings());
     }
 }

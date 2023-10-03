@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
+using System.CommandLine.Parsing;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -18,6 +19,7 @@ public static class GenerateCSRCommand
         public IEnumerable<IPAddress> SanIp { get; set; } = new List<IPAddress>();
         public IEnumerable<Uri> SanUri { get; set; } = new List<Uri>();
         public IEnumerable<string> SanUserPrincipalName { get; set; } = new List<string>();
+        public IDictionary<string, string> CustomOidMap { get; set; } = new Dictionary<string, string>();
         public bool RecreatePrivateKey { get; set; }
         public bool OutputToConsole { get; set; }
         public bool OutputPubToConsole { get; set; }
@@ -135,6 +137,21 @@ public static class GenerateCSRCommand
             description: "[Multiple] User Principal Name (UPN) to be added to the SAN extension.",
             getDefaultValue: () => new List<string>()
         ), (o, v) => o.SanUserPrincipalName = v ?? new List<string>()),
+        new OptionMapper<IEnumerable<string>>(new(
+            aliases: ["--oid"],
+            description: "[EXPERIMENTAL] [Multiple] Specify custom OID values in the form of o.i.d=value",
+            getDefaultValue: () => new List<string>()
+        ), (o, v) =>
+        {
+            foreach (var s in v!)
+            {
+                var split = s.Split('=');
+
+                if (split.Length != 2) throw new ArgumentException("Custom Oid must be in the form of: \"o.i.d=value\"");
+
+                o.CustomOidMap.Add(split[0], split[1]);
+            }
+        })
     ];
 
     public abstract class OptionMapper
@@ -189,6 +206,8 @@ public static class GenerateCSRCommand
         if (boundParams.OrganizationalUnit is not null) dnBuilder.AddOrganizationalUnitName(boundParams.OrganizationalUnit);
         if (boundParams.Organization is not null) dnBuilder.AddOrganizationName(boundParams.Organization);
         if (boundParams.StateOrProvince is not null) dnBuilder.AddStateOrProvinceName(boundParams.StateOrProvince);
+
+        boundParams.CustomOidMap.ToList().ForEach(kvp => dnBuilder.Add(kvp.Key, kvp.Value));
 
         if (boundParams.SanDns.Any() || boundParams.SanEmail.Any() || boundParams.SanIp.Any() || boundParams.SanUri.Any() || boundParams.SanUserPrincipalName.Any())
         {

@@ -425,6 +425,7 @@ obj/
 
 # Test Files
 *.csr
+*.pub
 
 # Other build dirs
 out/

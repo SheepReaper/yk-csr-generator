@@ -1,3 +1,5 @@
+[![CodeQL](https://github.com/SheepReaper/yk-csr-generator/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/SheepReaper/yk-csr-generator/actions/workflows/github-code-scanning/codeql)
+
 # YubiKey CSR Generator
 
 This tool generates a Certificate Signing Request (CSR) using a private key from a YubiKey device.

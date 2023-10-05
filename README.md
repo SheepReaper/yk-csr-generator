@@ -1,4 +1,5 @@
 [![CodeQL](https://github.com/SheepReaper/yk-csr-generator/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/SheepReaper/yk-csr-generator/actions/workflows/github-code-scanning/codeql)
+[![.github/workflows/release.yml](https://github.com/SheepReaper/yk-csr-generator/actions/workflows/release.yml/badge.svg?event=release)](https://github.com/SheepReaper/yk-csr-generator/actions/workflows/release.yml)
 
 # YubiKey CSR Generator
 

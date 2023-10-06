@@ -5,30 +5,20 @@ using Yubico.YubiKey.Piv;
 
 using AlgConfig = (System.Security.Cryptography.HashAlgorithm digester, int algBits);
 
-sealed class YubiKeySignatureGenerator : X509SignatureGenerator
+sealed class YubiKeySignatureGenerator(PivSession pivSession, byte slotNumber, RSA rsaPublicKeyObject, RSASignaturePadding paddingScheme) : X509SignatureGenerator
 {
-    private static readonly Dictionary<HashAlgorithmName, AlgConfig> digesterMap = new()
-    {
-            {HashAlgorithmName.SHA1, (CryptographyProviders.Sha1Creator(),RsaFormat.Sha1)},
-            {HashAlgorithmName.SHA256, (CryptographyProviders.Sha256Creator(),RsaFormat.Sha256)},
-            {HashAlgorithmName.SHA384, (CryptographyProviders.Sha384Creator(),RsaFormat.Sha384)},
-            {HashAlgorithmName.SHA512, (CryptographyProviders.Sha512Creator(),RsaFormat.Sha512)},
-        };
+    private static readonly Dictionary<HashAlgorithmName, AlgConfig> digesterMap = new() {
+        {HashAlgorithmName.SHA1, (CryptographyProviders.Sha1Creator(),RsaFormat.Sha1)},
+        {HashAlgorithmName.SHA256, (CryptographyProviders.Sha256Creator(),RsaFormat.Sha256)},
+        {HashAlgorithmName.SHA384, (CryptographyProviders.Sha384Creator(),RsaFormat.Sha384)},
+        {HashAlgorithmName.SHA512, (CryptographyProviders.Sha512Creator(),RsaFormat.Sha512)},
+    };
 
-    private readonly PivSession _pivSession;
-    private readonly byte _slotNumber;
-    private readonly int _keySizeBits;
-
-    private readonly X509SignatureGenerator _defaultGenerator;
-    private readonly RSASignaturePaddingMode _paddingMode;
-    public YubiKeySignatureGenerator(PivSession pivSession, byte slotNumber, RSA rsaPublicKeyObject, RSASignaturePadding paddingScheme)
-    {
-        _pivSession = pivSession;
-        _slotNumber = slotNumber;
-        _keySizeBits = rsaPublicKeyObject.KeySize;
-        _defaultGenerator = CreateForRSA(rsaPublicKeyObject, paddingScheme);
-        _paddingMode = paddingScheme.Mode;
-    }
+    private readonly PivSession _pivSession = pivSession;
+    private readonly byte _slotNumber = slotNumber;
+    private readonly int _keySizeBits = rsaPublicKeyObject.KeySize;
+    private readonly X509SignatureGenerator _defaultGenerator = CreateForRSA(rsaPublicKeyObject, paddingScheme);
+    private readonly RSASignaturePaddingMode _paddingMode = paddingScheme.Mode;
 
     protected override PublicKey BuildPublicKey()
     {
@@ -48,8 +38,8 @@ sealed class YubiKeySignatureGenerator : X509SignatureGenerator
     }
 
     private static AlgConfig GetSupportedAlgConfig(HashAlgorithmName hashAlgorithm) => digesterMap.TryGetValue(hashAlgorithm, out var algConfig)
-            ? algConfig
-            : throw new ArgumentException("Unsupported Hash Algorithm", nameof(hashAlgorithm));
+        ? algConfig
+        : throw new ArgumentException("Unsupported Hash Algorithm", nameof(hashAlgorithm));
 
     private static byte[] DigestData(byte[] data, HashAlgorithmName hashAlgorithm)
     {

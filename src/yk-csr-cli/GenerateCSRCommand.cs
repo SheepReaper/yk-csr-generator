@@ -1,6 +1,5 @@
 using System.CommandLine;
 using System.CommandLine.Binding;
-using System.CommandLine.Parsing;
 using System.Net;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -268,6 +267,6 @@ public static class GenerateCSRCommand
 
         if (boundParams.OutPubFile is not null) await File.WriteAllTextAsync(boundParams.OutPubFile.FullName, pubKeyPem, ctx);
 
-        if (boundParams.OutputPubToConsole || boundParams.OutPubFile is null) Console.WriteLine(pubKeyPem.ReplaceLineEndings());
+        if (boundParams.OutputPubToConsole) Console.WriteLine(pubKeyPem.ReplaceLineEndings());
     }
 }

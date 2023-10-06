@@ -38,10 +38,12 @@ public class YubiKeyKeyCollector
 
         return true;
     }
+
     private static readonly Dictionary<KeyEntryRequest, Func<KeyEntryData, bool>> requestHandlerMap = new() {
-    {KeyEntryRequest.Release, (_) => true},
-    {KeyEntryRequest.VerifyPivPin, VerifyPivPinHandler}
-};
+        {KeyEntryRequest.Release, (_) => true},
+        {KeyEntryRequest.VerifyPivPin, VerifyPivPinHandler}
+    };
+
     public YubiKeyKeyCollector(Handle parentWindow) { }
 
     public YubiKeyKeyCollector() { }

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>CLI tool for generating CSRs using YubiKey hardware tokens with PIV support.</Description>
     <Company>Bryan Gonzalez</Company>
-    <Copyright>© 2023-$([System.DateTime]::Now.Year) $(Company)</Copyright>
+    <Copyright>© 2023 $(Company)</Copyright>
     <AssemblyTitle>YubiKey CSR Generator</AssemblyTitle>
   </PropertyGroup>
 

@@ -31,7 +31,7 @@ jobs:
           dotnet-version: "8.0"
 
       - name: Build
-        run: dotnet publish /p:DebugType=None /p:DebugSymbols=false /p:PublishReadyToRun=true -c Release -r ${{ matrix.target }} --self-contained -o out/${{ matrix.target }} -- ./src/yk-csr-cli/GenerateYKCSR.csproj
+        run: dotnet publish -c Release --self-contained -p:DebugType=None -p:DebugSymbols=false -p:PublishReadyToRun=true -p:Version=${{ github.event.release.tag_name }} -r ${{ matrix.target }} -o out/${{ matrix.target }} -- ./src/yk-csr-cli/GenerateYKCSR.csproj
 
       - name: Archive and Hash
         run: |
@@ -39,7 +39,7 @@ jobs:
           sha256sum ./out/${{ matrix.target }}.zip > ./out/${{ matrix.target }}.zip.sha256
 
       - name: Upload
-        run: gh release upload ${{github.event.release.tag_name}} ./out/${{ matrix.target }}.zip ./out/${{ matrix.target }}.zip.sha256 --clobber
+        run: gh release upload ${{ github.event.release.tag_name }} ./out/${{ matrix.target }}.zip ./out/${{ matrix.target }}.zip.sha256 --clobber
         env:
           GITHUB_TOKEN: ${{ github.TOKEN }}
         shell: bash

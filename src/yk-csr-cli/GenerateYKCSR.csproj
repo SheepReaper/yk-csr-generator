@@ -1,12 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Description>CLI tool for generating CSRs using YubiKey hardware tokens with PIV support.</Description>
+    <Company>Bryan Gonzalez</Company>
+    <Copyright>© 2023-$([System.DateTime]::Now.Year) $(Company)</Copyright>
+    <AssemblyTitle>YubiKey CSR Generator</AssemblyTitle>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>preview</LangVersion>
-    <VersionPrefix>1.0.0</VersionPrefix>
     <UseAppHost>true</UseAppHost>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>

@@ -1,3 +1,5 @@
+name: Release Build
+
 on:
   release:
     types: [published, edited]
@@ -35,7 +37,7 @@ jobs:
 
       - name: Archive and Hash
         run: |
-          zip -r ./out/${{ matrix.target }}.zip ./out/${{ matrix.target }} -j
+          zip -9 -j -r ./out/${{ matrix.target }}.zip ./out/${{ matrix.target }}
           sha256sum ./out/${{ matrix.target }}.zip > ./out/${{ matrix.target }}.zip.sha256
 
       - name: Upload

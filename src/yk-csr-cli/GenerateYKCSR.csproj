@@ -16,7 +16,7 @@
     <UseAppHost>true</UseAppHost>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <PublishTrimmed>false</PublishTrimmed>
+    <PublishTrimmed>true</PublishTrimmed>
     <AssemblyName>yk-csr-gen</AssemblyName>
   </PropertyGroup>
 

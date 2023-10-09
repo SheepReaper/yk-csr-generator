@@ -1,0 +1,39 @@
+name: Test Build Configuration
+
+on:
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: Comma separated list of string targets to build
+        default: '"linux-x64","linux-musl-x64","linux-arm","linux-arm64","osx-x64","osx-arm64","win-arm64","win-x64","win-x86"'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        target: ${{ fromJson(format('[{0}]', inputs.targets || '"linux-x64","linux-musl-x64","linux-arm","linux-arm64","osx-x64","osx-arm64","win-arm64","win-x64","win-x86"')) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@3447fd6a9f9e57506b15f895c5b76d3b197dc7c2 # v3
+        with:
+          dotnet-version: "8.0"
+
+      - name: Build
+        run: dotnet publish -c Release --self-contained -p:DebugType=None -p:DebugSymbols=false -p:PublishReadyToRun=true -p:Version=0.0.0-test -r ${{ matrix.target }} -o out/${{ matrix.target }} -- ./src/yk-csr-cli/GenerateYKCSR.csproj
+
+      - name: Archive and Hash
+        run: |
+          zip -9 -r ./out/${{ matrix.target }}.zip ./out/${{ matrix.target }} -j
+          sha256sum ./out/${{ matrix.target }}.zip > ./out/${{ matrix.target }}.zip.sha256
+
+      - name: Upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: ./out/*

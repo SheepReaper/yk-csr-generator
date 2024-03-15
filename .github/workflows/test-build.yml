@@ -25,7 +25,7 @@ jobs:
           dotnet-version: "8.0"
 
       - name: Build
-        run: dotnet publish -c Release --self-contained -p:DebugType=None -p:DebugSymbols=false -p:PublishReadyToRun=true -p:Version=0.0.0-test -r ${{ matrix.target }} -o out/${{ matrix.target }} -- ./src/yk-csr-cli/GenerateYKCSR.csproj
+        run: dotnet publish -p:PublishProfile=Default -p:Version=0.0.0-test -r:${{ matrix.target }} -o:out/${{ matrix.target }} -- ./src/yk-csr-cli/GenerateYKCSR.csproj
 
       - name: Archive and Hash
         run: |

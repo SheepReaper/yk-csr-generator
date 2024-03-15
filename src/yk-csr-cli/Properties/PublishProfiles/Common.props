@@ -1,0 +1,9 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <DebugType>None</DebugType>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <OutputType>Exe</OutputType>
+    <!-- <SelfContained>true</SelfContained> -->
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+</Project>

@@ -30,7 +30,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
-          dotnet-version: "8.0"
+          dotnet-version: "10.0"
 
       - name: Build
         run: dotnet publish -p:PublishProfile=Default -p:Version=$(echo ${{ github.event.release.tag_name }} | cut -c2-) -r:${{ matrix.target }} -o:out/${{ matrix.target }} -- ./src/yk-csr-cli/GenerateYKCSR.csproj
